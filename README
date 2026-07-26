@@ -3,6 +3,9 @@
  About this README
 ------------------------------------------------------------
 
+This repository is a custom fork. See CUSTOM-BUILD-NOTES.md for the local VNC
+changes and the Debian build, installation, and troubleshooting procedure.
+
 This README is intended to provide quick and to-the-point documentation for
 technical users intending to compile parts of Apache Guacamole themselves.
 
