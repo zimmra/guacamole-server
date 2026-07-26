@@ -538,16 +538,31 @@ if test "x${have_libvncserver}" = "xyes"
 then
 
     # Whether libvncserver was built against libgcrypt
+    have_vnc_gcrypt=no
     AC_CHECK_DECL([LIBVNCSERVER_WITH_CLIENT_GCRYPT],
-                         [AC_CHECK_HEADER(gcrypt.h,,
-                                          [AC_MSG_WARN([
+                  [have_vnc_gcrypt=yes],,
+                  [[#include <rfb/rfbconfig.h>]])
+
+    # Newer versions of libvncserver use a different macro for the same
+    # underlying libgcrypt dependency
+    if test "x${have_vnc_gcrypt}" = "xno"
+    then
+        AC_CHECK_DECL([LIBVNCSERVER_HAVE_LIBGCRYPT],
+                      [have_vnc_gcrypt=yes],,
+                      [[#include <rfb/rfbconfig.h>]])
+    fi
+
+    if test "x${have_vnc_gcrypt}" = "xyes"
+    then
+        AC_CHECK_HEADER(gcrypt.h,,
+                       [AC_MSG_WARN([
   --------------------------------------------
    libvncserver appears to be built against
    libgcrypt, but the libgcrypt headers
    could not be found. VNC will be disabled.
   --------------------------------------------])
-                                           have_libvncserver=no])],,
-                    [[#include <rfb/rfbconfig.h>]])
+                        have_libvncserver=no])
+    fi
 
 fi
 

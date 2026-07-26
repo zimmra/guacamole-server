@@ -52,7 +52,12 @@
 #include <rfb/rfbconfig.h>
 #include <rfb/rfbproto.h>
 
-#ifdef LIBVNCSERVER_WITH_CLIENT_GCRYPT
+#if defined(LIBVNCSERVER_WITH_CLIENT_GCRYPT) \
+        || defined(LIBVNCSERVER_HAVE_LIBGCRYPT)
+#define GUAC_VNC_WITH_CLIENT_GCRYPT
+#endif
+
+#ifdef GUAC_VNC_WITH_CLIENT_GCRYPT
 #include <errno.h>
 #include <gcrypt.h>
 #endif
@@ -61,7 +66,7 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef LIBVNCSERVER_WITH_CLIENT_GCRYPT
+#ifdef GUAC_VNC_WITH_CLIENT_GCRYPT
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 #endif
 
@@ -259,7 +264,7 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
     rfb_client->UnlockWriteToTLS = guac_vnc_unlock_write_to_tls;
 #endif
     
-#ifdef LIBVNCSERVER_WITH_CLIENT_GCRYPT
+#ifdef GUAC_VNC_WITH_CLIENT_GCRYPT
     
     /* Check if GCrypt is initialized, do it if not. */
     if (!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
