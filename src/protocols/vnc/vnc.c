@@ -68,6 +68,17 @@ GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
 char* GUAC_VNC_CLIENT_KEY = "GUAC_VNC";
 
+/**
+ * The VNC authentication schemes supported by this client. Restricting
+ * authentication to the basic RFB authentication types prevents macOS Screen
+ * Sharing from selecting Apple Remote Desktop authentication, whose
+ * LibVNCClient implementation is not compatible with modern macOS.
+ */
+static const uint32_t guac_vnc_allowed_auth_schemes[] = {
+    rfbNoAuth,
+    rfbVncAuth
+};
+
 #ifdef ENABLE_VNC_TLS_LOCKING
 /**
  * A callback function that is called by the VNC library prior to writing
@@ -195,6 +206,11 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
     
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
+
+    /* Restrict authentication to no-auth and standard VNC password auth */
+    SetClientAuthSchemes(rfb_client, guac_vnc_allowed_auth_schemes,
+            sizeof(guac_vnc_allowed_auth_schemes)
+                    / sizeof(guac_vnc_allowed_auth_schemes[0]));
 
     /* Depth */
     guac_vnc_set_pixel_format(rfb_client, vnc_settings->color_depth);
